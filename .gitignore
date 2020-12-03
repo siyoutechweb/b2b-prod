@@ -1,0 +1,8 @@
+/vendor
+/.idea
+/public/storage
+# /public/assets
+Homestead.json
+Homestead.yaml
+.env
+/resources/assets

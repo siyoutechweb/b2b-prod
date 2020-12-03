@@ -1,0 +1,3 @@
+INSERT INTO `companies` (`id`, `name`, `description`, `email`, `phone`, `adress`, `created_at`, `updated_at`, `image_url`) VALUES
+(1, 'DHL Express', 'Courier service in Osmannero, Italy', 'www.dhl.it/it/express.html', '+39 199 199 345', 'Via Ettore Maiorana, 63, 50019 Sesto Fiorentino FI, Italy', '2020-02-05 13:40:52', '2020-02-05 13:40:52', 'https://www.ecommerce-nation.fr/wp-content/uploads/2019/10/dhl-express-transporteur-international-livraison-rapide-analyse-avis-1.png'),
+(2, 'UPS', 'UPS', 'www.dhl.it/it/express.html', '+39 404 828 6000', 'Via Ettore Maiorana, 63, 50019 Sesto Fiorentino FI, Italy', '2020-02-05 13:40:52', '2020-02-05 13:40:52', 'https://www.ups.com/assets/resources/images/UPS_logo.svg');
