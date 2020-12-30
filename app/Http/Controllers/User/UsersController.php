@@ -587,7 +587,7 @@ class UsersController extends Controller
                 "email" => $user->email,
                 "password" => $user->password,
                 "contact" => $user->contact,
-                //"min_price"=>0,
+                "hide_cost_price"=>0,
                 "role_id" => 1,
                 "activated_account" => 1,
 		"created_at"=>Carbon::now(),
@@ -608,7 +608,20 @@ class UsersController extends Controller
                 "store_is_selfsupport" => $request->input('store_is_selfsupport'),
                 "shop_owner_id" => $s2c_shop,
 		"created_at"=>Carbon::now(),
-		"updated_at"=>Carbon::now()]);
+        "updated_at"=>Carbon::now()]);
+        //id, shop_owner_id, max_chains, max_managers, max_cachiers, start_date, finish_date, created_at, updated_at, max_operators
+        $new_license = DB::connection('S2C')->table('licenses')->insertGetId(
+            [
+            "shop_owner_id"=>$s2c_shop,
+            "max_chains"=>1,
+            "max_managers"=>3,
+            "max_operators"=>3,
+            "max_cachiers"=>3,
+            "start_date"=>date('Y-m-d'),
+            "finish_date"=>date('Y-m-d', strtotime('+1 year')),
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+            ]);
                 
           
         
