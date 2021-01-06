@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers\Discount;
 
+use App\Models\Discount;
 class DiscountsController extends Controller {
 
     public function __construct()

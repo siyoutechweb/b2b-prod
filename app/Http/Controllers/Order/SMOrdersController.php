@@ -6,16 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class SMOrdersController extends Controller {
 
-<<<<<<< HEAD
     public function getOrderList(Request $request)
     {
-        $date=$request->input('date');
-=======
+        $date=$request->input('date'); 
+    }
     public function getSalesmanagerOrderList(Request $request)
     {
         
         return $request;
->>>>>>> a964cc6faf670df4c0f995339e56ed6b7247659d
         $salesmanager = AuthController::me();
         $shopIds= $salesmanager->shopOwners()->distinct()->pluck('shop_owner_id');
         $supplierIds= $salesmanager->suppliers()->distinct()->pluck('supplier_salesmanager_shop_owner.supplier_id');

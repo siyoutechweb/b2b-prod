@@ -44,7 +44,8 @@ $router->get('/infos', [
 
 $router->post('/addSalesManager', ['uses' => 'User\UsersController@addSalesManager']);
 $router->post('/addSupplier', ['uses' => 'User\UsersController@addSupplier']);
-$router->post('/addShop_Owner', ['uses' => 'User\UsersController@addShop_Owner']);
+$router->post('/addShop_Owner', ['uses' => 'User\UsersController@addShopOwnerByAdmin']);
+$router->post('/addShopowner', ['uses' => 'User\UsersController@addShop_Owner']);
 
 
 /**

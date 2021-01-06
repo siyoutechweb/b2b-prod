@@ -118,6 +118,7 @@ class UsersController extends Controller
         $user->longitude = $request->input('lng');
         $user->latitude = $request->input('lat');
         $user->min_price = $request->input('min_price');
+        $user->validation=1;
         $user->logistic_service = $request->input('logistic_service');
         $user->product_visibility = $request->input('product_visibility');
         if ($request->hasFile('profil_img')) {
@@ -174,6 +175,7 @@ class UsersController extends Controller
         $user->last_name = $last_name;
         $user->email = $email;
         $user->password = Hash::make($password);
+        $user->validation = 1;
 
         $role = Role::where('name', 'SalesManager')->first();
         $role->users()->save($user);
@@ -694,5 +696,128 @@ class UsersController extends Controller
         return response()->json(["msg" => "user updated successfully !"], 200);
 
     }
+
+
+    public function addShopOwnerByAdmin(Request $request)
+    {
+       $tmp =User::where('email',$request->input('email'))->orWhere('contact',$request->input('contact'))->first();
+        if($tmp) {
+            return response()->json(["msg" => "User already exists !!"]);
+        }
+       $password = $request->input('password');
+        $user_role = $request->input('role_id');
+        $user = new User();
+        $user->first_name = $request->input('first_name');
+        $user->last_name = $request->input('last_name');
+        $user->email = $request->input('email');
+        $user->description = $request->input('description');
+        $min_price =$request->has('min_price')? $request->input('min_price'):0;
+        $user->password = Hash::make($password);
+        //$user->min_price = 0;
+        $user->validation = 1;
+        $user->contact =$request->input('contact');
+        $user->phone_num2 = $request->input('phone_num2');
+        $user->tax_number =$request->input('tax_number');
+        $user->first_resp_name = $request->input('first_resp_name');
+        $user->adress = $request->input('adress');
+        $user->country =$request->input('country');
+        $user->region = $request->input('region');
+        $user->postal_code =$request->input('postal_code');
+        $user->longitude = $request->input('lng');
+        $user->latitude = $request->input('lat');
+        $user->min_price = 0;
+        //$request->input('min_price');
+        // $user->logistic_service = $request->input('logistic_service');
+        // $user->product_visibility = $request->input('product_visibility');
+        if ($request->hasFile('profil_img')) {
+            $path = $request->file('profil_img')->store('profils','google');
+            $fileUrl = Storage::url($path);
+            $user->img_url = $fileUrl;
+            $user->img_name = basename($path);
+        }
+        $role = Role::where('id', $user_role)->first();
+            //echo $role;
+
+            $role->users()->save($user);
+
+            $s2c_shop = DB::connection('S2C')->table('users')->insertGetId(
+                ["first_name" => $user->first_name,
+                "last_name" => $user->last_name,
+                "email" => $user->email,
+                "password" => $user->password,
+                "contact" => $user->contact,
+                "hide_cost_price"=>0,
+                "role_id" => 1,
+                "activated_account" => 1,
+		"created_at"=>Carbon::now(),
+		"updated_at"=>Carbon::now()]);
+            $new_store = DB::connection('S2C')->table('shops')->insertGetId(
+                ["store_name" => $request->input('store_name'),
+                "store_name_en" => $request->input('store_name_en'),
+                "store_name_it" =>  $request->input('store_name_it'),
+                "store_area" =>  $request->input('store_area'),
+                "store_domain" =>  $request->input('store_domain'),
+                "store_adress" => $request->input('store_adress'),
+                "contact" => $request->input('store_contact'),
+                "store_longitude" => $request->input('store_longitude'),
+                "store_latitude" => $request->input('store_latitude'),
+                "opening_hour" => $request->input('opening_hour'),
+                "closure_hour" => $request->input('closure_hour'),
+                "store_ip" => $request->input('store_ip'),
+                "store_is_selfsupport" => $request->input('store_is_selfsupport'),
+                "shop_owner_id" => $s2c_shop,
+		"created_at"=>Carbon::now(),
+        "updated_at"=>Carbon::now()]);
+        $shop_owner_id = $s2c_shop;
+        $max_chains=$request->input('max_chains');
+        $max_managers=$request->input('max_managers');
+        $max_operators=$request->input('max_operators');
+        $max_cachiers=$request->input('max_cachiers');
+        $start_date=$request->input('start_date');
+        $finish_date=$request->input('finish_date');
+
+        $this->addLicense($shop_owner_id,$max_chains,$max_managers,$max_operators,$max_cachiers,$start_date,$finish_date);
+        //id, shop_owner_id, max_chains, max_managers, max_cachiers, start_date, finish_date, created_at, updated_at, max_operators
+        // $new_license = DB::connection('S2C')->table('licenses')->insertGetId(
+        //     [
+        //     "shop_owner_id"=>$s2c_shop,
+        //     "max_chains"=>1,
+        //     "max_managers"=>3,
+        //     "max_operators"=>3,
+        //     "max_cachiers"=>3,
+        //     "start_date"=>date('Y-m-d'),
+        //     "finish_date"=>date('Y-m-d', strtotime('+1 year')),
+        //     "created_at"=>Carbon::now(),
+        //     "updated_at"=>Carbon::now()
+        //     ]);
+                
+          
+        
+        return response()->json(["msg" => "user added successfully !"], 200);
+
+    }
+    public function addLicense($shop_owner_id,$max_chains,$max_managers,$max_operators,$max_cachiers,$start_date,$finish_date)
+     {  
+         if(!$max_chains || $max_chains=='') { $max_chains=3;}
+         if(!$max_managers || $max_chains=='') {$max_managers=3;}
+         if(!$max_operators || $max_chains=='') {$max_operators=3;}
+         if(!$max_cachiers || $max_chains=='') { $max_cachiers=3;}
+         if(!$start_date || $start_date=='') { $start_date=date('Y-m-d');}
+         if(!$finish_date || $finish_date=="") { $finish_date=date('Y-m-d', strtotime('+1 year'));}
+
+        //$shop_owner_id=, max_chains, max_managers, max_cachiers, start_date, finish_date, created_at, updated_at, max_operators
+        $new_license = DB::connection('S2C')->table('licenses')->insertGetId(
+            [
+            "shop_owner_id"=>$shop_owner_id,
+            "max_chains"=>$max_chains,
+            "max_managers"=>$max_managers,
+            "max_operators"=>$max_operators,
+            "max_cachiers"=>$max_cachiers,
+            "start_date"=>$start_date, //date('Y-m-d'),
+            "finish_date"=>$finish_date,//date('Y-m-d', strtotime('+1 year')),
+            "created_at"=>Carbon::now(),
+            "updated_at"=>Carbon::now()
+            ]);
+     }
 
 }
